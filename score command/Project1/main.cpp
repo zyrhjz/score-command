@@ -30,6 +30,18 @@ int count_passed(const std::vector<int>& scores) {
 	}
 	return count;
 }
+bool parseinteger(const std::string& x,int& value) {
+	int result;
+	std::istringstream tmp(x);
+	tmp >> result;
+	if (!tmp || !tmp.eof()) {
+		return false;
+	}
+	else {
+		value = result;
+		return true;
+	}
+}
 int main() {
 	std::vector<int> scores;
 	int input;
@@ -50,9 +62,7 @@ int main() {
 				continue;
 			}
 		}
-		std::istringstream tmp(choicetoken);
-		tmp >> input;
-		if (!tmp || !tmp.eof()) {
+		if(!parseinteger(choicetoken,input)){
 			std::cout << "请输入 0 到 3 的整数\n";
 			continue;
 		}
@@ -68,9 +78,7 @@ int main() {
 				if (!std::cin) {
 					return 0;
 				}
-				std::istringstream temp(token);
-				temp >> x;
-				if (!temp||!temp.eof()){
+				if (!parseinteger(token, x)) {
 					std::cout << "请输入整数" << std::endl;
 					continue;
 				}
