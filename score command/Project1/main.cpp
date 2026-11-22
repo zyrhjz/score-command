@@ -1,6 +1,8 @@
 ﻿#include<iostream>
 #include<vector>
 #include<limits>
+#include<string>
+#include<sstream>
 double avg(const std::vector<int>& scores) {
 	int n = scores.size();
 	int sum = 0;
@@ -31,12 +33,13 @@ int count_passed(const std::vector<int>& scores) {
 int main() {
 	std::vector<int> scores;
 	int input;
+	std::string choicetoken;
 	while (true) {
 		std::cout << "1. 录入成绩" << std::endl;
 		std::cout << "2.查看成绩" << std::endl;
 		std::cout << "3.显示统计" << std::endl;
 		std::cout << "0.退出" << std::endl;
-		if (!(std::cin >> input)) {
+		if (!(std::cin >> choicetoken)) {
 			if (std::cin.eof()) {
 				return 0;
 			}
@@ -47,21 +50,28 @@ int main() {
 				continue;
 			}
 		}
+		std::istringstream tmp(choicetoken);
+		tmp >> input;
+		if (!tmp || !tmp.eof()) {
+			std::cout << "请输入 0 到 3 的整数\n";
+			continue;
+		}
 		if (input == 0) {
 			break;
 		}
 		else if (input == 1) {
 			scores.clear();
 			while(scores.size()<3) {
+				std::string token;
 				int x;
-				std::cin >> x;
+				std::cin >> token;
 				if (!std::cin) {
-					if (std::cin.eof()) {
-						return 0;
-					}
-					std::cin.clear();
-					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-					std::cout << "请输入整数成绩\n";
+					return 0;
+				}
+				std::istringstream temp(token);
+				temp >> x;
+				if (!temp||!temp.eof()){
+					std::cout << "请输入整数" << std::endl;
 					continue;
 				}
 				if (x < 0 || x>100) {
