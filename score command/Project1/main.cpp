@@ -3,28 +3,50 @@
 #include<limits>
 #include<string>
 #include<sstream>
-double avg(const std::vector<int>& scores) {
+#include<stdexcept>
+class studentscore {
+private:
+	std::string studentid;
+	std::string name;
+	int score;
+public:
+	studentscore(const std::string& id, const std::string& sname, const int& x) :studentid(id),name(sname),score(x){
+		if (x < 0 || x>100) {
+			throw std::invalid_argument("成绩必须在0-100之间");
+		}
+	};
+	int getscore() const{
+		return score;
+	}
+	const std::string& getstudentid() const{
+		return studentid;
+	}
+	const std::string& getname() const {
+		return name;
+	}
+};
+double avg(const std::vector<studentscore>& scores) {
 	int n = scores.size();
 	int sum = 0;
 	for (int i = 0;i < n;i++) {
-		sum += scores[i];
+		sum += scores[i].getscore();
 	}
 	double average = static_cast<double>(sum) / n;
 	return average;
 }
-int maxscore(const std::vector<int>& scores) {
+int maxscore(const std::vector<studentscore>& scores) {
 	int max = -1;
-	for (int x : scores) {
-		if (x > max) {
-			max = x;
+	for (const studentscore& record: scores) {
+		if (record.getscore() > max) {
+			max = record.getscore();
 		}
 	}
 	return max;
 }
-int count_passed(const std::vector<int>& scores) {
+int count_passed(const std::vector<studentscore>& scores) {
 	int count = 0;
-	for (int x : scores) {
-		if (x >= 60) {
+	for (const studentscore& record:scores) {
+		if (record.getscore() >= 60) {
 			count++;
 		}
 	}
@@ -42,8 +64,13 @@ bool parseinteger(const std::string& x,int& value) {
 		return true;
 	}
 }
+
+
+
+
+
 int main() {
-	std::vector<int> scores;
+	std::vector<studentscore> scores;
 	int input;
 	std::string choicetoken;
 	while (true) {
@@ -70,11 +97,31 @@ int main() {
 			break;
 		}
 		else if (input == 1) {
+			std::string input_pnum;
+			int pnum;
+			std::cout << "请输入录入人数(1-100)" << std::endl;
+			while (true) {
+				std::cin >> input_pnum;
+				if (!std::cin) {
+					return 0;
+				}
+				if (!parseinteger(input_pnum, pnum)) {
+					std::cout << "请输入1-100之间的整数" << std::endl;
+					continue;
+				}
+				if (pnum < 1 || pnum>100) {
+					std::cout << "请输入1-100之间的整数" << std::endl;
+					continue;
+				}
+				break;
+			}
 			scores.clear();
-			while(scores.size()<3) {
+			while(scores.size()<pnum) {
 				std::string token;
+				std::string sid;
+				std::string sname;
 				int x;
-				std::cin >> token;
+				std::cin >> sid >> sname>>token;
 				if (!std::cin) {
 					return 0;
 				}
@@ -83,15 +130,18 @@ int main() {
 					continue;
 				}
 				if (x < 0 || x>100) {
-					std::cout << "成绩必须在 0 到 100 之间\n";
+					std::cout << "成绩必须在 0 到 100 之间" << std::endl;
 					continue;
 				}
-				scores.push_back(x);
+				studentscore record(sid, sname, x);
+				scores.push_back(record);
 			}
 		}
 		else if (input == 2) {
-			for (int x : scores) {
-				std::cout << x << std::endl;
+			for (const studentscore& record :scores) {
+				std::cout <<"学号:" << record.getstudentid() << std::endl;
+				std::cout << "学生姓名:" << record.getname() << std::endl;
+				std::cout << "成绩:" << record.getscore() << std::endl;
 			}
 		}
 		else if (input == 3) {
