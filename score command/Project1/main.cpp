@@ -1,9 +1,11 @@
-﻿#include<iostream>
+﻿#define NOMINMAX
+#include<iostream>
 #include<vector>
 #include<limits>
 #include<string>
 #include<sstream>
 #include<stdexcept>
+#include<mysql.h>
 class studentscore {
 private:
 	std::string studentid;
@@ -70,6 +72,58 @@ bool parseinteger(const std::string& x,int& value) {
 
 
 int main() {
+	std::cout << "请输入mysql用户名" << std::endl;
+	std::string dbuser;
+	std::getline(std::cin,dbuser);
+	std::cout << "请输入mysql密码" << std::endl;
+	std::string dbpassword;
+	std::getline(std::cin, dbpassword);
+	MYSQL* connection = mysql_init(nullptr);
+	if (connection == nullptr) {
+		std::cout<< "初始化失败" << std::endl;
+		return 1;
+	}
+	else {
+		std::cout << "初始化成功" << std::endl;
+		MYSQL* connected = mysql_real_connect(
+			connection,
+			"127.0.0.1",
+			dbuser.c_str(),
+			dbpassword.c_str(),
+			"SCORE_COMMAND",
+			3307,
+			nullptr,
+			0
+		);
+		if (connected == nullptr) {
+			std::cout << "连接失败" << std::endl;
+			std::cout << mysql_error(connection) << std::endl;
+		}
+		else {
+			std::cout << "连接成功" << std::endl;
+			int queryStatus = mysql_query(connection, "SELECT DATABASE()");
+			if (queryStatus == 0) {
+				std::cout << "mysql运行成功" << std::endl;
+				MYSQL_RES* result = mysql_store_result(connection);
+				if (result == nullptr) {
+					std::cout << mysql_error(connection) << std::endl;
+				}
+				else {
+					std::cout <<"已取得查询结果" << std::endl;
+					MYSQL_ROW row = mysql_fetch_row(result);
+					if (row != nullptr&&row[0]!=nullptr) {
+						std::cout << row[0] << std::endl;
+					}
+					mysql_free_result(result);
+				}
+			}
+			else {
+				std::cout << "mysql运行失败" << std::endl;
+				std::cout << mysql_error(connection) << std::endl;
+			}
+		}
+		mysql_close(connection);
+	}
 	std::vector<studentscore> scores;
 	int input;
 	std::string choicetoken;
