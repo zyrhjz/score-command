@@ -48,3 +48,4 @@ FROM EXAM_SCORE AS ES
 WHERE ES.EXAM_ID=1;
 SELECT * FROM EXAM;
 SELECT VERSION() AS server_version, @@port AS server_port;
+SELECT USER() AS login_user, @@port AS server_port;
